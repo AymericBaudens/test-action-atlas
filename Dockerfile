@@ -8,4 +8,4 @@ RUN pip install --target=/app requests
 # A distroless container image with Python and some basics like SSL certificates
 # https://github.com/GoogleContainerTools/distroless
 COPY . .
-ENTRYPOINT ["python3 main.py"]
+ENTRYPOINT ["python3"]
