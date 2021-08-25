@@ -10,7 +10,7 @@ inputs:
     required: false
 
 outputs:
-  res:
+  myres:
     description: 'script output'
 
 runs:
