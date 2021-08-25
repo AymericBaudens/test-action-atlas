@@ -7,7 +7,7 @@ base_url = "https://api.aiven.io/v1"
 aiven_project = os.environ["INPUT_PROJECT"]
 
 
-print("::set-output name=myres::coucou " + aiven_project)
+# print("::set-output name=myres::coucou " + aiven_project)
 headers = {"Authorization": "aivenv1 " + apitoken}
 req_url = base_url + "/project/" + aiven_project + "/service"
 
@@ -15,6 +15,7 @@ res = requests.get(
     req_url,
     headers=headers,
 )
+print("::set-output name=myres::" + res.status_code)
 
 if res.status_code == 200:
     json_data = json.loads(res.text)
