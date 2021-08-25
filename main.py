@@ -15,7 +15,7 @@ res = requests.get(
     req_url,
     headers=headers,
 )
-print("::set-output name=myres::" + res.status_code)
+print("::set-output name=myres::" + str(res.status_code))
 
 if res.status_code == 200:
     json_data = json.loads(res.text)
