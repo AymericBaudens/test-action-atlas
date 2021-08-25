@@ -16,6 +16,6 @@ outputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.project }}
+  env:
+    INPUT_PROJECT: ${{ inputs.project }}
 
