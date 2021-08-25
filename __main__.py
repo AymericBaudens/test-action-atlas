@@ -1,12 +1,12 @@
 import requests
 import json
 
+apitoken = ""
+base_url = "https://api.aiven.io/v1"
+aiven_project = "fras-t-tst"
+
 
 def main():
-    apitoken = ""
-    base_url = "https://api.aiven.io/v1"
-    aiven_project = "fras-t-tst"
-
     headers = {"Authorization": "aivenv1 " + apitoken}
     req_url = base_url + "/project/" + aiven_project + "/service"
 
@@ -25,7 +25,3 @@ def main():
                         + service_integration["service_integration_id"]
                     )
                     exit(0)
-
-
-if __name__ == "__main__":
-    main()
