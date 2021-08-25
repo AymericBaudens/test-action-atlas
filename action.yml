@@ -7,7 +7,7 @@ inputs:
     required: false
   project:
     description: 'Aiven project hosting the services'
-    required: false
+    required: true
 
 outputs:
   myres:
@@ -16,4 +16,6 @@ outputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
+    args:
+    - ${{ inputs.project }}
 

@@ -4,7 +4,7 @@ import os
 
 apitoken = ""
 base_url = "https://api.aiven.io/v1"
-aiven_project = os.environ["INPUT_MYPROJECT"]
+aiven_project = os.environ["INPUT_PROJECT"]
 
 
 print("::set-output name=myres::coucou " + aiven_project)
