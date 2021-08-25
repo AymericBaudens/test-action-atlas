@@ -7,7 +7,7 @@ aiven_project = "fras-t-tst"
 
 
 def main():
-    print("coucou from python script")
+    print("::set-output name=res::coucou")
     headers = {"Authorization": "aivenv1 " + apitoken}
     req_url = base_url + "/project/" + aiven_project + "/service"
 
