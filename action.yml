@@ -4,12 +4,13 @@ description: 'Promote recovery service as Master'
 inputs:
   token:
     description: 'Aiven API token'
-    required: true
+    required: false
   project:
     description: 'Aiven project hosting the services'
-    required: true
+    required: false
 
 runs:
+  id: 'docker step'
   using: 'docker'
   image: 'Dockerfile'
   args:
