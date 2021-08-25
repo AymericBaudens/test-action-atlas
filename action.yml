@@ -18,4 +18,5 @@ runs:
   image: 'Dockerfile'
   env:
     INPUT_PROJECT: ${{ inputs.project }}
+    INPUT_TOKEN: ${{ inputs.token }}
 

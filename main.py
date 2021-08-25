@@ -2,7 +2,7 @@ import requests
 import json
 import os
 
-apitoken = ""
+apitoken = os.environ["INPUT_TOKEN"]
 base_url = "https://api.aiven.io/v1"
 aiven_project = os.environ["INPUT_PROJECT"]
 
