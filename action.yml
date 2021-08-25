@@ -9,6 +9,10 @@ inputs:
     description: 'Aiven project hosting the services'
     required: false
 
+outputs:
+  res:
+    description: 'script output'
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
