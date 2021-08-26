@@ -19,4 +19,6 @@ runs:
   env:
     INPUT_PROJECT: ${{ inputs.project }}
     INPUT_TOKEN: ${{ inputs.token }}
+    INPUT_EUW1_SERVICE: ${{ input.euw1_service_name }}
+    INPUT_EUW4_SERVICE: ${{ input.euw4_service_name }}
 

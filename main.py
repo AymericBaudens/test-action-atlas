@@ -77,4 +77,4 @@ if reseuw1.status_code == 200 and reseuw4.status_code == 200:
 else:
     output = "services unavailable"
 
-print(output)
+print("::set-output name=myres:: " + aiven_project + " - " + output)
