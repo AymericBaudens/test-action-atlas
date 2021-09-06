@@ -2,10 +2,10 @@ import requests
 import json
 import os
 
-# apitoken = os.environ["INPUT_TOKEN"]
-# aiven_project = os.environ["INPUT_PROJECT"]
-apitoken = ""
-aiven_project = "fras-t-tst"
+apitoken = os.environ["INPUT_TOKEN"]
+aiven_project = os.environ["INPUT_PROJECT"]
+# apitoken = ""
+# aiven_project = "fras-t-tst"
 base_url = "https://api.aiven.io/v1"
 euw1_service_name = "primary-region-db"
 euw4_service_name = "recovery-region-db"
