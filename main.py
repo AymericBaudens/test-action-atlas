@@ -69,7 +69,19 @@ if ressrc.status_code == 200 and resdst.status_code == 200:
             deletion = json.loads(res.text)
             if deletion["message"] == "deleted":
                 output = "dst DB promote master started. src DB will be shutted down"
+
                 # update service powered = false
+                req_url = (
+                    base_url
+                    + "/project/"
+                    + aiven_project
+                    + "/service/"
+                    + src_service_name
+                )
+                res = requests.put(
+                    req_url, headers=headers, data=json.dumps({"powered": False})
+                )
+
     else:
         output = "not ready to switch"
 
