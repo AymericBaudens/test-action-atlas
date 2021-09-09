@@ -8,11 +8,11 @@ inputs:
   project:
     description: 'Aiven project hosting the services'
     required: true
-  euw1_service_name:
-    description: 'euw1_service_name'
+  src_service_name:
+    description: 'src_service_name'
     required: true
-  euw4_service_name:
-    description: 'euw4_service_name'
+  dst_service_name:
+    description: 'dst_service_name'
     required: true
 
 outputs:
@@ -25,6 +25,6 @@ runs:
   env:
     INPUT_PROJECT: ${{ inputs.project }}
     INPUT_TOKEN: ${{ inputs.token }}
-    INPUT_EUW1_SERVICE: ${{ inputs.euw1_service_name }}
-    INPUT_EUW4_SERVICE: ${{ inputs.euw4_service_name }}
+    INPUT_SRC_SERVICE: ${{ inputs.src_service_name }}
+    INPUT_DST_SERVICE: ${{ inputs.dst_service_name }}
 
