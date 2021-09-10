@@ -1,19 +1,31 @@
-name: 'Aiven DB switchover'
-description: 'Promote recovery service as Master'
+name: 'Atlas DB switchover'
+description: 'Promote primary on recovery region'
 
 inputs:
-  token:
-    description: 'Aiven API token'
-    required: false
+  token_public:
+    description: 'Atlas API token - public'
+    required: true
+  token_private:
+    description: 'Atlas API token - private'
+    required: true
   project:
-    description: 'Aiven project hosting the services'
+    description: 'Atlas project hosting the services'
     required: true
-  src_service_name:
-    description: 'src_service_name'
+  service_name:
+    description: 'Atlas service name'
     required: true
-  dst_service_name:
-    description: 'dst_service_name'
+  src_region:
+    description: 'primary region'
     required: true
+    default: 'WESTERN_EUROPE'
+  src_region:
+    description: 'recovery region'
+    required: true
+    default: 'EUROPE_WEST_4'
+  arb_region:
+    description: 'arbitrary region'
+    required: false
+    default: 'EUROPE_NORTH_1'
 
 outputs:
   myres:
@@ -24,7 +36,10 @@ runs:
   image: 'Dockerfile'
   env:
     INPUT_PROJECT: ${{ inputs.project }}
-    INPUT_TOKEN: ${{ inputs.token }}
-    INPUT_SRC_SERVICE: ${{ inputs.src_service_name }}
-    INPUT_DST_SERVICE: ${{ inputs.dst_service_name }}
+    INPUT_TOKEN_PUBLIC: ${{ inputs.token_public }}
+    INPUT_TOKEN_PRIVATE: ${{ inputs.token_private }}
+    INPUT_SERVICE: ${{ inputs.service_name }}
+    INPUT_SRC_REGION: ${{ inputs.src_region }}
+    INPUT_DST_REGION: ${{ inputs.dst_region }}
+    INPUT_ARB_REGION: ${{ inputs.arb_region }}
 

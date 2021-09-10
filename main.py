@@ -1,91 +1,89 @@
 import requests
-import json
+from requests.auth import HTTPDigestAuth
 import os
 
-apitoken = os.environ["INPUT_TOKEN"]
-aiven_project = os.environ["INPUT_PROJECT"]
-src_service_name = os.environ["INPUT_SRC_SERVICE"]
-dst_service_name = os.environ["INPUT_DST_SERVICE"]
-# apitoken = ""
-# aiven_project = "fras-t-tst"
-# src_service_name = "primary-region-db"
-# dst_service_name = "recovery-region-db"
-base_url = "https://api.aiven.io/v1"
-headers = {"Authorization": "aivenv1 " + apitoken}
+atlas_token_public = os.environ["INPUT_TOKEN_PUBLIC"]
+atlas_token_private = os.environ["INPUT_TOKEN_PRIVATE"]
+atlas_project = os.environ["INPUT_PROJECT"]
+service_name = os.environ["INPUT_SERVICE"]
+src_region = os.environ["INPUT_SRC_REGION"]
+dst_region = os.environ["INPUT_DST_REGION"]
+arb_region = os.environ["INPUT_ARB_REGION"]
 
+# atlas_token_public = ""
+# atlas_token_private = ""
+# atlas_project = "fras-t-tst"
+# service_name = "Cluster0"
+# src_region = "WESTERN_EUROPE"
+# dst_region = "EUROPE_WEST_4"
+# arb_region = "EUROPE_NORTH_1"
 
-req_url = base_url + "/project/" + aiven_project + "/service"
+# warning IP whitelist du token utilisé
 
-ressrc = requests.get(
-    req_url + "/" + src_service_name,
+atlas_project_id = "0"
+
+base_url = "https://cloud.mongodb.com/api/atlas/v1.0"
+auth = HTTPDigestAuth(atlas_token_public, atlas_token_private)
+headers = {"Content-type": "application/json", "Accept": "application/json"}
+
+response = requests.get(
+    base_url + "/groups/byName/" + atlas_project,
+    auth=auth,
     headers=headers,
 )
-resdst = requests.get(
-    req_url + "/" + dst_service_name,
+res_json = response.json()
+if "id" in res_json:
+    atlas_project_id = res_json["id"]
+
+response = requests.get(
+    base_url + "/groups/" + atlas_project_id + "/clusters/" + service_name,
+    auth=auth,
     headers=headers,
 )
-
-if ressrc.status_code == 200 and resdst.status_code == 200:
-    service_src = json.loads(ressrc.text)
-    service_dst = json.loads(resdst.text)
-
-    service_src_integ_id = "srcko"
-    service_dst_integ_id = "dstko"
-
-    if "service_integrations" in service_src["service"]:
-        for service_integration in service_src["service"]["service_integrations"]:
-            if (
-                service_integration["integration_type"] == "read_replica"
-                and service_integration["active"]
-                and service_integration["dest_service"] == dst_service_name
-            ):
-                service_src_integ_id = service_integration["service_integration_id"]
-    if "service_integrations" in service_dst["service"]:
-        for service_integration in service_dst["service"]["service_integrations"]:
-            if (
-                service_integration["integration_type"] == "read_replica"
-                and service_integration["active"]
-                and service_integration["source_service"] == src_service_name
-            ):
-                service_dst_integ_id = service_integration["service_integration_id"]
-    if service_src_integ_id == service_dst_integ_id:
-        print("Integration to be deleted: " + service_src_integ_id)
-
-        req_url = (
-            base_url
-            + "/project/"
-            + aiven_project
-            + "/integration/"
-            + service_src_integ_id
-        )
-
-        res = requests.delete(
-            req_url,
-            headers=headers,
-        )
-
-        output = "failed to delete"
-        if res.status_code == 200:
-            deletion = json.loads(res.text)
-            if deletion["message"] == "deleted":
-                output = "dst DB promote master started. src DB will be shutted down"
-
-                # update service powered = false
-                req_url = (
-                    base_url
-                    + "/project/"
-                    + aiven_project
-                    + "/service/"
-                    + src_service_name
-                )
-                res = requests.put(
-                    req_url, headers=headers, data=json.dumps({"powered": False})
-                )
-
-    else:
-        output = "not ready to switch"
+res_json = response.json()
+if (
+    response.status_code == 403
+    and res_json["errorCode"] == "IP_ADDRESS_NOT_ON_ACCESS_LIST"
+):
+    output = "IP whitelist KO"
+elif response.status_code != 200:
+    output = "Service or project unavailable"
 
 else:
-    output = "services unavailable"
+    print(res_json["replicationSpec"])
+    if (
+        src_region in res_json["replicationSpec"]
+        and dst_region in res_json["replicationSpec"]
+        and arb_region in res_json["replicationSpec"]
+    ):
+        if (
+            res_json["replicationSpec"][src_region]["priority"]
+            > res_json["replicationSpec"][dst_region]["priority"]
+            and res_json["replicationSpec"][dst_region]["priority"]
+            > res_json["replicationSpec"][arb_region]["priority"]
+        ):
+            print("ready to switch")
+            # tjs array a une seule entree???? a verifier
+            specs = res_json["replicationSpecs"][0]
+            p_high = specs["regionsConfig"][src_region]["priority"]
+            p_mid = specs["regionsConfig"][dst_region]["priority"]
+            specs["regionsConfig"][src_region]["priority"] = p_mid
+            specs["regionsConfig"][dst_region]["priority"] = p_high
+            data = {"replicationSpecs": [specs]}
+            print(data)
+            response = requests.patch(
+                base_url + "/groups/" + atlas_project_id + "/clusters/" + service_name,
+                auth=auth,
+                json=data,
+                headers=headers,
+            )
+            if response.status_code == 200:
+                output = "region switch in progress"
+            else:
+                output = "failed to switch"
+        else:
+            output = "wrong replication way"
+    else:
+        output = "wrong regions"
 
-print("::set-output name=myres:: " + aiven_project + " - " + output)
+print("::set-output name=myres:: " + atlas_project + " - " + output)
