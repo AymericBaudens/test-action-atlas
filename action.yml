@@ -18,7 +18,7 @@ inputs:
     description: 'primary region'
     required: true
     default: 'WESTERN_EUROPE'
-  src_region:
+  dst_region:
     description: 'recovery region'
     required: true
     default: 'EUROPE_WEST_4'
